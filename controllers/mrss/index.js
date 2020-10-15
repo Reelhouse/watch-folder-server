@@ -1,6 +1,4 @@
-const config = require(process.cwd() + "/config"),
-			awsConfig = require(process.cwd() + "/aws-config"),
-			jsonxml = require('jsontoxml'),
+const jsonxml = require('jsontoxml'),
 			fs = require('fs'),
 			redis = require('../../helpers/redis');
 
@@ -16,10 +14,9 @@ const getFeedData = (req, callback) => {
 	// Load the SDK and UUID
 	const AWS = require('aws-sdk');
 	const uuid = require('uuid');
-	AWS.config.loadFromPath(process.cwd() + '/aws-config.json');
 
 	// Get our bucket value
-	const bucketName = req.params.bucket || awsConfig.default_bucket;
+	const bucketName = req.params.bucket || process.env.AWS_S3_BUCKET;
 
 	// Basic default configs
 	const base_aws_url = "https://s3.amazonaws.com/";
@@ -30,7 +27,7 @@ const getFeedData = (req, callback) => {
 		Delimiter: "/"
 	}
 
-	const folder = req.params.folder || awsConfig.folder;
+	const folder = req.params.folder || process.env.AWS_S3_FOLDER;
 
 	if (folder && folder.length) {
 		params.Prefix = folder + "/";
@@ -133,9 +130,9 @@ const getFeedData = (req, callback) => {
 
 				fs.readFile(process.cwd() + "/views/mrss.xml", "utf8", (err, data) => {
 					const finalMrss = data.replace("CONTENT_GOES_HERE", jsonxml(mrssJson));
-					if (config.redis) {
+					if (process.env.REDIS_ENDPOINT) {
 						// If we have a Redis config, assume we have a Redis connection
-						const redisKey = 'dotstudioPRO_Watch_Folder:' + awsConfig.default_bucket;
+						const redisKey = 'dotstudioPRO_Watch_Folder:' + process.env.AWS_S3_BUCKET;
 						redis.set(redisKey, finalMrss)
 							.then(result => {
 								// Assume all went well
@@ -171,9 +168,9 @@ const getFeedData = (req, callback) => {
  * @returns {function}
  */
 const getFeed = (req, callback) => {
-	if (config.redis) {
+	if (process.env.REDIS_ENDPOINT) {
 		// If we have a Redis config, assume we have a Redis connection
-		const redisKey = 'dotstudioPRO_Watch_Folder:' + awsConfig.default_bucket;
+		const redisKey = 'dotstudioPRO_Watch_Folder:' + process.env.AWS_S3_BUCKET;
 		redis.get(redisKey)
 			.then(val => {
 				console.log("Getting feed from Redis");

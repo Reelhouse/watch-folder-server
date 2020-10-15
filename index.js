@@ -1,6 +1,6 @@
+require('dotenv').config()
 const restify = require('restify'),
 	  plugins = require('restify').plugins,
-	  config = require('./config'),
 	  corsMiddleware = require('restify-cors-middleware');
 
 var server = restify.createServer();
@@ -35,7 +35,7 @@ server.use(restify.plugins.jsonp());
 // Bring in our routes
 require('./routes')(server);
 
-server.listen(config.port, function() {
+server.listen(process.env.PORT || 3000, function() {
   console.log('%s listening at %s', server.name, server.url);
 });
 

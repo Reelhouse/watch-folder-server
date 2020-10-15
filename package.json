@@ -16,6 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.452.0",
+    "dotenv": "^8.2.0",
     "fs": "0.0.1-security",
     "ioredis": "^4.9.3",
     "jsontoxml": "^1.0.1",

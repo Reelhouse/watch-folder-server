@@ -1,11 +1,10 @@
-const config = require('../config'),
-			Redis = require('ioredis')
-if (config.redis) {
+const Redis = require('ioredis')
+if (process.env.REDIS_ENDPOINT) {
 	const redisConn = new Redis({
-	  port: config.redis.port,          // Redis port
-	  host: config.redis.endpoint,   // Redis host
+	  port: process.env.REDIS_PORT,          // Redis port
+	  host: process.env.REDIS_ENDPOINT,   // Redis host
 	  family: 4,           // 4 (IPv4) or 6 (IPv6)
-	  password: config.redis.password
+	  password: process.env.REDIS_PASSWORD
 	});
 
 	/**
